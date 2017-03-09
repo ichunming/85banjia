@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ichunming.banjia.dao.CardDao">
+  <resultMap id="BaseResultMap" type="com.ichunming.banjia.model.Card">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="uid" jdbcType="BIGINT" property="uid" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="effect_date" jdbcType="TIMESTAMP" property="effectDate" />
+    <result column="expire_date" jdbcType="TIMESTAMP" property="expireDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, uid, level, effect_date, expire_date
+  </sql>
+  
+  <select id="select" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from card
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from card
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.ichunming.banjia.model.Card">
+    insert into card
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="effectDate != null">
+        effect_date,
+      </if>
+      <if test="expireDate != null">
+        expire_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="effectDate != null">
+        #{effectDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null">
+        #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.ichunming.banjia.model.Card">
+    update card
+    <set>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="effectDate != null">
+        effect_date = #{effectDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireDate != null">
+        expire_date = #{expireDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getCards" resultType="com.ichunming.banjia.vo.CardInfo">
+    select user.id as uid, user.username as username, user.mobile as mobile,
+           user.portrait as portrait, card.level as level
+    from user, card
+    where user.id = card.uid and now() between card.effect_date and card.expire_date
+    order by level desc
+  </select>
+</mapper>
